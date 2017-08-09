@@ -15,11 +15,14 @@ proxy_url=''
 hcp_user_credentials="User:Password"
 
 # the following values need to be taken from the IoT Cockpit
-device_id='3fcb3eb7-cdd4-49b3-8ceb-4b1bb1ca36bf'
-oauth_credentials_for_device='e58f3ecf72d2e25b767b2b914fe4ea'
+device_id='09a23360-7a9c-48d9-8507-b0f52fc904f5' # Device Type ID
+oauth_credentials_for_device='396cedcbe311a29583461b845d9fcdb'
 
-message_type_id_isOpen='933de88a047f40c61a42'
-message_type_id_Distance='933de88a047f40c61a42'
+message_type_light_level='eef05424fdccf2303352'
+message_type_smoke_level='d535ac103a8198791408'
+message_type_temperature='abc20d18683b59bde379'
+message_type_vibration='aa9d63bfc5a5dece5797'
+message_type_light_trigger='d9f1a245c261a7f45dde'
 
 # This section will contain the mappings used in the examples
 pin_traffic_light_red=9
@@ -33,4 +36,7 @@ pin_smoke_digital=26
 pin_smoke_analog=1
 pin_temp=4
 pin_vibration=12
+
+# Other Custom Values
+elevator_id='GDH1'
 # ===== nothing to be changed / configured below this line ===========

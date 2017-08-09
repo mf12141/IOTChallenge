@@ -19,7 +19,7 @@ import config
 gpio.setmode(gpio.BCM)  #Broadcom pin-numbering scheme.  This uses the pin numbers that match the pin numbers on the Pi Traffic Light
 gpio.setup(config.pin_traffic_light_red,gpio.OUT)  # Red LED pin set as output
 gpio.setup(config.pin_traffic_light_yellow,gpio.OUT)  # Yellow LED pin set as output
-gpio.setup(config.pin_traffic_light_green,gpio.OUT)
+gpio.setup(config.pin_traffic_light_green,gpio.OUT) # Green LED pin set as output
 # Set the pin HIGH
 gpio.output(config.pin_traffic_light_red, True)  # Turns on the Red Light
 time.sleep(1)
