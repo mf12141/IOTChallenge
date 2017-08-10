@@ -1,4 +1,5 @@
 # This section is for remote debugging from Eclipse on my PC
+"""
 import sys
 sys.path.append(r'/home/pi/Public/Projects/Elevator')
 import pydevd
@@ -9,7 +10,7 @@ MY_PATHS_FROM_ECLIPSE_TO_PYTHON = [
 setup_client_server_paths(MY_PATHS_FROM_ECLIPSE_TO_PYTHON)
 pydevd.settrace('192.168.1.64') # replace IP with address 
                                 # of Eclipse host machine
-
+"""
 # all configuration settings come from config.py
 try:
     import config
@@ -99,7 +100,8 @@ def main():
     
 def send_to_hcp(http, url, headers, value):
     timestamp=int(time.time())
-    body='{"mode":"async", "messageType":"' + str(config.message_type_vibration) + '", "messages":[{"timestamp":"' + str(timestamp) + '", "id":"' + str(config.elevator_id) + '", "level":"' + str(value) + '"}]}'
+    additionalData='Sample additional data'
+    body='{"mode":"async", "messageType":"' + str(config.message_type_vibration) + '", "messages":[{"timestamp":"' + str(timestamp) + '", "level":"' + str(value) + '", "additionalData":"' + str(additionalData) + '"}]}'
     # print(body)
     r = http.urlopen('POST', url, body=body, headers=headers)
     if (debug_communication == 1):
@@ -125,16 +127,16 @@ def poll_from_hcp(http, url, headers, tlSensor):
             for single_message in messages_reversed:
                 # print(single_message)
                 payload=single_message["messages"][0]
-                id=payload["id"]
-                light=payload["light"]
+                action=payload["action"]
+                target=payload["target"]
                 # print(opcode)
                 # print(operand)
                 # now do things depending on the opcode
-                if (id == "ON"):
-                    tlSensor.LedOn(int(light))
+                if (action == "ON"):
+                    tlSensor.LedOn(int(target))
                 else:
-                    if (id == "OFF"):
-                        tlSensor.LedOff(int(light))
+                    if (action == "OFF"):
+                        tlSensor.LedOff(int(target))
                 msg_string=payload["additionalData"]
                 print(msg_string)
         except TypeError:
