@@ -45,7 +45,7 @@ pin_smoke_analog=1
 pin_temp=4
 pin_vibration=12
 pin_ultrasonic_dist_trig=17
-pin_ultrasonic_dist_echo=4
+pin_ultrasonic_dist_echo=27
 
 # Other Custom Values
 elevator_id='GDH1'
