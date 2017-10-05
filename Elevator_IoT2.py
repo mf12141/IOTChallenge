@@ -262,6 +262,7 @@ class InterfaceWithCloud(object):
         self.headers['Authorization'] = 'Bearer ' + config.oauth_credentials_for_device
         self.headers['Content-Type'] = 'application/json;charset=utf-8'
         self.url='https://iotmms' + config.hcp_account_id + config.hcp_landscape_host + '/com.sap.iotservices.mms/v1/api/http/data/'+ str(config.device_id)
+        self.oTrafficLight = TrafficLightSensor()
         
     def publish(self,payload):
         r = self.http.urlopen('POST', self.url, body=payload, headers=self.headers)
@@ -269,6 +270,49 @@ class InterfaceWithCloud(object):
             print("payload:" + str(payload))
             print("return status:" + str(r.status))
             print(r.data)
+            
+    def map(self,x): 
+        return {
+            '9' :config.pin_traffic_light_red,
+            '10': config.pin_traffic_light_yellow,
+            '11': config.pin_traffic_light_green
+        }.get(x,config.pin_traffic_light_red)     
+    
+    def retrieve(self):
+        global msg_string
+
+        r = self.http.urlopen('GET', self.url, headers=self.headers)
+        if (debug_communication == 1):
+            print("retrieve():" + str(r.status))
+            print(r.data)
+        json_string='{"all_messages":'+(r.data).decode("utf-8")+'}'
+        #print(json_string)
+
+        try:
+            json_string_parsed=json.loads(json_string)
+            #print(json_string_parsed)
+            # take care: if multiple messages arrive in 1 payload - their order is last in / first out - so we need to traverse in reverese order
+            try:
+                messages_reversed=reversed(json_string_parsed["all_messages"])
+                for single_message in messages_reversed:
+                    print(single_message)
+                    payload=single_message["messages"][0]
+                    action=payload["action"]
+                    target=payload["target"]
+                    # print(opcode)
+                    # print(operand)
+                    # now do things depending on the opcode
+                    if (action == "ON"):
+                        self.oTrafficLight.LedOn(int(self.map(target)))
+                    else:
+                        if (action == "OFF"):
+                            self.oTrafficLight.LedOff(int(self.map(target)))
+                    msg_string=payload["additionalData"]
+                    print(msg_string)
+            except TypeError:
+                print("Problem decoding the messages " + (r.data).decode("utf-8") + " retrieved from HCP! Can and will continue though.")
+        except ValueError:
+            print("Problem decoding the message " + (r.data).decode("utf-8") + " retrieved from HCP! Can and will continue though.")
 
         
 class SensorSet(object):
@@ -347,6 +391,7 @@ def main():
             """
             message = oSensorSet.get_message()
             oInterface.publish(message)
+            oInterface.retrieve()
 
     except KeyboardInterrupt:
         GPIO.cleanup()
